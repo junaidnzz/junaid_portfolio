@@ -332,7 +332,7 @@ const Contact: React.FC = () => {
                     className="w-3 h-3 bg-green-500 rounded-full"
                   />
                   <span className="text-lg font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
-                    Available for new projects
+                    Available for new opportunities
                   </span>
                   <motion.div
                     animate={{
