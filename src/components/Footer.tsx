@@ -14,7 +14,7 @@ export default function Footer() {
         <p className="font-mono text-xs text-muted">
           © {new Date().getFullYear()} {profile.name} · Built with React + Vite, designed with AI assistance
         </p>
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-1">
           {socials.map((social) => (
             <a
               key={social.name}
@@ -22,7 +22,7 @@ export default function Footer() {
               target="_blank"
               rel="noreferrer"
               aria-label={social.label}
-              className="text-muted hover:text-accent transition-colors text-lg"
+              className="press grid place-items-center w-11 h-11 rounded-lg text-muted hover:text-accent transition-colors text-lg"
             >
               <Icon name={social.name} />
             </a>

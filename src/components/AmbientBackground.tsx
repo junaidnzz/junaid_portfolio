@@ -2,14 +2,14 @@ export default function AmbientBackground() {
   return (
     <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
       <div
-        className="absolute inset-0 animate-drift motion-reduce:animate-none"
+        className="absolute -inset-[4%] animate-drift motion-reduce:animate-none"
         style={{
+          willChange: 'transform',
           backgroundImage: `
             radial-gradient(600px circle at 20% 15%, rgba(34, 211, 238, 0.10), transparent 60%),
             radial-gradient(700px circle at 80% 35%, rgba(139, 92, 246, 0.10), transparent 60%),
             radial-gradient(800px circle at 45% 90%, rgba(34, 211, 238, 0.06), transparent 60%)
           `,
-          backgroundSize: '140% 140%',
         }}
       />
       <div

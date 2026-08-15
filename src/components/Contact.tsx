@@ -19,7 +19,7 @@ export default function Contact() {
       title="Let's Build Something Intelligent"
       intro="I'm open to interesting products, AI feature work, and senior engineering roles. My inbox is always open."
     >
-      <div className="flex items-center gap-2 mb-10 font-mono text-sm text-emerald-400">
+      <div className="flex items-center gap-2 mb-10 font-mono text-sm tracking-micro text-emerald-400">
         <span className="relative flex h-2.5 w-2.5">
           <span className="animate-ping motion-reduce:animate-none absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
@@ -29,7 +29,7 @@ export default function Contact() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
         {channels.map((channel, i) => (
-          <GlassCard key={channel.label} delay={i * 0.05} className="p-0">
+          <GlassCard key={channel.label} delay={i * 0.05} className="p-0" interactive>
             <a
               href={channel.href}
               target={channel.href.startsWith('mailto') ? undefined : '_blank'}
@@ -43,7 +43,9 @@ export default function Contact() {
                 <span className="block font-display font-semibold text-white group-hover:text-accent transition-colors">
                   {channel.label}
                 </span>
-                <span className="block font-mono text-xs text-muted mt-0.5">{channel.value}</span>
+                <span className="block font-mono text-xs text-muted tracking-micro mt-0.5">
+                  {channel.value}
+                </span>
               </span>
             </a>
           </GlassCard>
@@ -52,7 +54,7 @@ export default function Contact() {
 
       <a
         href={`mailto:${profile.email}`}
-        className="inline-block glow-ring rounded-lg px-8 py-4 font-mono text-accent hover:bg-accent/10 transition-colors"
+        className="press inline-block glow-ring rounded-lg px-8 py-4 font-mono text-accent tracking-micro hover:bg-accent/10 transition-colors"
       >
         Say hello →
       </a>

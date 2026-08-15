@@ -36,7 +36,7 @@ export default function AIEngineering() {
           ))}
         </div>
 
-        <GlassCard delay={0.15} className="overflow-hidden lg:sticky lg:top-24">
+        <GlassCard delay={0.15} material className="overflow-hidden lg:sticky lg:top-24">
           <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
             <span className="w-3 h-3 rounded-full bg-red-500/60" />
             <span className="w-3 h-3 rounded-full bg-yellow-500/60" />

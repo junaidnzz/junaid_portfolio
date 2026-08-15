@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import { enterUp, spring, viewportOnce } from '../../lib/motion';
 
 interface SectionProps {
   id: string;
@@ -14,14 +15,19 @@ export default function Section({ id, eyebrow, title, intro, children }: Section
     <section id={id} className="py-24 scroll-mt-20">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.5 }}
+          variants={enterUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          transition={spring}
           className="mb-14"
         >
-          <p className="font-mono text-sm text-accent mb-3">{eyebrow}</p>
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-white">{title}</h2>
+          {/* Small mono text takes slightly positive tracking (§15). */}
+          <p className="font-mono text-sm text-accent tracking-micro mb-3">{eyebrow}</p>
+          {/* Hierarchy from weight + size + leading as a set, not size alone. */}
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-white tracking-heading">
+            {title}
+          </h2>
           {intro && <p className="mt-4 max-w-2xl text-muted leading-relaxed">{intro}</p>}
         </motion.div>
         {children}

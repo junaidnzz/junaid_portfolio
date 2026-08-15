@@ -18,8 +18,8 @@ export default function Projects() {
             <div
               className={`relative h-36 bg-gradient-to-br ${project.gradient} flex items-end justify-between px-6 pb-4`}
             >
-              <span className="font-mono text-xs text-muted">{project.category}</span>
-              <span className="font-mono text-xs text-muted">{project.year}</span>
+              <span className="font-mono text-xs text-muted tracking-micro">{project.category}</span>
+              <span className="font-mono text-xs text-muted tracking-micro">{project.year}</span>
               {project.ai && (
                 <span className="absolute top-4 left-6">
                   <Badge label="AI" icon="sparkles" accent />
@@ -35,7 +35,7 @@ export default function Projects() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={`Visit ${project.title}`}
-                    className="text-muted hover:text-accent transition-colors"
+                    className="press grid place-items-center w-10 h-10 -m-2 rounded-lg text-muted hover:text-accent transition-colors"
                   >
                     <Icon name="external-link" className="text-lg" />
                   </a>
