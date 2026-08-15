@@ -1,118 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
-import { useTheme } from '../context/ThemeContext';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { navLinks } from '../data/navigation';
+import { Icon } from '../data/icons';
 
-const Navbar: React.FC = () => {
-  const { isDark, toggleTheme } = useTheme();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const ticking = useRef(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 24);
+        ticking.current = false;
+      });
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navLinks = [
-    { href: '#home', label: 'Home' },
-    { href: '#about', label: 'About' },
-    { href: '#skills', label: 'Skills' },
-    { href: '#experience', label: 'Experience' },
-    { href: '#projects', label: 'Projects' },
-    { href: '#contact', label: 'Contact' },
-  ];
-
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'glass-effect shadow-lg'
-          : 'bg-transparent'
+    <header
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
+        scrolled ? 'glass-card rounded-none border-x-0 border-t-0 bg-base/70' : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center"
-          >
-            <span className="text-2xl font-bold text-gradient">JN</span>
-          </motion.div>
+      <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="#top" className="font-mono text-lg text-white">
+          junaid<span className="text-accent">.nazir</span>
+        </a>
 
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <motion.a
-                key={link.href}
+        <ul className="hidden md:flex items-center gap-8">
+          {navLinks.map((link, i) => (
+            <li key={link.href}>
+              <a
                 href={link.href}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
+                className="group font-mono text-sm text-muted hover:text-accent transition-colors"
               >
+                <span className="text-accent mr-1">0{i + 1}.</span>
                 {link.label}
-              </motion.a>
-            ))}
-            
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-            >
-              {isDark ? <FaSun size={20} /> : <FaMoon size={20} />}
-            </motion.button>
-          </div>
-
-          <div className="md:hidden flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            >
-              {isDark ? <FaSun size={20} /> : <FaMoon size={20} />}
-            </motion.button>
-            
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 dark:text-gray-300"
-            >
-              {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{
-          opacity: isMobileMenuOpen ? 1 : 0,
-          height: isMobileMenuOpen ? 'auto' : 0,
-        }}
-        transition={{ duration: 0.3 }}
-        className="md:hidden glass-effect overflow-hidden"
-      >
-        <div className="px-4 pt-2 pb-3 space-y-1">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-            >
-              {link.label}
-            </a>
+              </a>
+            </li>
           ))}
-        </div>
-      </motion.div>
-    </motion.nav>
-  );
-};
+        </ul>
 
-export default Navbar;
+        <button
+          className="md:hidden text-ink text-2xl p-2"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+        >
+          <Icon name={menuOpen ? 'x' : 'menu'} />
+        </button>
+      </nav>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.ul
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden glass-card rounded-none border-x-0 bg-base/90 px-6 py-4 space-y-3"
+          >
+            {navLinks.map((link, i) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="block font-mono text-sm text-muted hover:text-accent transition-colors py-1"
+                >
+                  <span className="text-accent mr-2">0{i + 1}.</span>
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}
