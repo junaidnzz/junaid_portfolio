@@ -24,7 +24,7 @@ export default function Contact() {
           <span className="animate-ping motion-reduce:animate-none absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400" />
         </span>
-        Available for new projects
+        Available for new opportunities
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
