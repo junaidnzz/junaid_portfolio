@@ -1,118 +1,135 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { FaSun, FaMoon, FaBars, FaTimes } from 'react-icons/fa';
-import { useTheme } from '../context/ThemeContext';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { navLinks } from '../data/navigation';
+import { Icon } from '../data/icons';
+import { spring, springSheet } from '../lib/motion';
 
-const Navbar: React.FC = () => {
-  const { isDark, toggleTheme } = useTheme();
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+export default function Navbar() {
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeId, setActiveId] = useState<string>('');
+  const ticking = useRef(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      requestAnimationFrame(() => {
+        setScrolled(window.scrollY > 24);
+        ticking.current = false;
+      });
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navLinks = [
-    { href: '#home', label: 'Home' },
-    { href: '#about', label: 'About' },
-    { href: '#skills', label: 'Skills' },
-    { href: '#experience', label: 'Experience' },
-    { href: '#projects', label: 'Projects' },
-    { href: '#contact', label: 'Contact' },
-  ];
+  // Wayfinding: every screen should answer "where am I?" (§16). The nav
+  // reflects the section you are actually reading, continuously.
+  useEffect(() => {
+    const sections = navLinks
+      .map((link) => document.querySelector<HTMLElement>(link.href))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActiveId(`#${visible.target.id}`);
+      },
+      { rootMargin: '-20% 0px -60% 0px', threshold: [0.1, 0.5, 1] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        isScrolled
-          ? 'glass-effect shadow-lg'
-          : 'bg-transparent'
+    <header
+      // Translucent chrome with content scrolling underneath, and a soft
+      // scroll edge instead of a hard 1px divider (§12).
+      className={`fixed top-0 inset-x-0 z-50 transition-colors duration-300 ${
+        scrolled ? 'scroll-edge bg-base/60 backdrop-blur-xl backdrop-saturate-150' : 'bg-transparent'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center"
+      <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="#top" className="press font-mono text-lg text-white">
+          junaid<span className="text-accent">.nazir</span>
+        </a>
+
+        <ul className="hidden md:flex items-center gap-1">
+          {navLinks.map((link, i) => {
+            const active = activeId === link.href;
+            return (
+              <li key={link.href} className="relative">
+                <a
+                  href={link.href}
+                  aria-current={active ? 'true' : undefined}
+                  className={`press relative isolate block px-3 py-2 font-mono text-sm tracking-micro transition-colors ${
+                    active ? 'text-accent' : 'text-muted hover:text-accent'
+                  }`}
+                >
+                  {/* A single shared element slides between items — a spring,
+                      so it can be redirected mid-flight (§3, §4). */}
+                  {active && (
+                    <motion.span
+                      layoutId="nav-active"
+                      transition={spring}
+                      className="absolute inset-0 -z-10 rounded-lg bg-white/[0.07]"
+                    />
+                  )}
+                  <span className="text-accent mr-1">0{i + 1}.</span>
+                  {link.label}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+
+        <button
+          className="press md:hidden text-ink text-2xl grid place-items-center w-11 h-11 -mr-2 rounded-lg"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+        >
+          <Icon name={menuOpen ? 'x' : 'menu'} />
+        </button>
+      </nav>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.ul
+            // Anchored to the chrome it came from and it materialises —
+            // blur and scale together, not a plain fade (§7, §12). Enter and
+            // exit share one path, so dismissal retraces the arrival.
+            initial={{ opacity: 0, scaleY: 0.94, y: -6, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, scaleY: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, scaleY: 0.94, y: -6, filter: 'blur(10px)' }}
+            transition={springSheet}
+            style={{ transformOrigin: 'top center' }}
+            className="md:hidden glass-strong rounded-none border-x-0 bg-base/90 px-6 py-4 space-y-1"
           >
-            <span className="text-2xl font-bold text-gradient">JN</span>
-          </motion.div>
-
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <motion.a
-                key={link.href}
-                href={link.href}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-              >
-                {link.label}
-              </motion.a>
+            {navLinks.map((link, i) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  onClick={() => setMenuOpen(false)}
+                  aria-current={activeId === link.href ? 'true' : undefined}
+                  className={`press block rounded-lg px-2 py-2.5 font-mono text-sm tracking-micro transition-colors ${
+                    activeId === link.href
+                      ? 'text-accent bg-white/[0.06]'
+                      : 'text-muted hover:text-accent'
+                  }`}
+                >
+                  <span className="text-accent mr-2">0{i + 1}.</span>
+                  {link.label}
+                </a>
+              </li>
             ))}
-            
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-            >
-              {isDark ? <FaSun size={20} /> : <FaMoon size={20} />}
-            </motion.button>
-          </div>
-
-          <div className="md:hidden flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            >
-              {isDark ? <FaSun size={20} /> : <FaMoon size={20} />}
-            </motion.button>
-            
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 dark:text-gray-300"
-            >
-              {isMobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{
-          opacity: isMobileMenuOpen ? 1 : 0,
-          height: isMobileMenuOpen ? 'auto' : 0,
-        }}
-        transition={{ duration: 0.3 }}
-        className="md:hidden glass-effect overflow-hidden"
-      >
-        <div className="px-4 pt-2 pb-3 space-y-1">
-          {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="block px-3 py-2 text-gray-700 dark:text-gray-300 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-            >
-              {link.label}
-            </a>
-          ))}
-        </div>
-      </motion.div>
-    </motion.nav>
+          </motion.ul>
+        )}
+      </AnimatePresence>
+    </header>
   );
-};
-
-export default Navbar;
+}

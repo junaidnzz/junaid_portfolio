@@ -1,20 +1,20 @@
 {
-  "short_name": "JN Portfolio",
-  "name": "Junaid Nazir - Software Engineer",
+  "short_name": "Junaid Nazir",
+  "name": "Junaid Nazir — Software Engineer · AI",
   "icons": [
     {
-      "src": "favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml"
+      "src": "favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
     },
     {
       "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
+      "sizes": "48x48",
       "type": "image/x-icon"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#667eea",
-  "background_color": "#ffffff"
+  "theme_color": "#05070f",
+  "background_color": "#05070f"
 }

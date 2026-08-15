@@ -1,49 +1,41 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-  ],
-  darkMode: 'class',
+export default {
+  content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
-        dark: {
-          bg: '#0f172a',
-          card: '#1e293b',
-          text: '#e2e8f0',
-        }
+        base: '#05070f',
+        surface: '#0b0f1c',
+        raised: '#111827',
+        ink: '#e5e9f0',
+        muted: '#8b93a7',
+        accent: '#22d3ee',
+        'accent-2': '#8b5cf6',
       },
-      animation: {
-        'gradient': 'gradient 8s ease infinite',
-        'float': 'float 6s ease-in-out infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      // Tracking is a function of size, never a single global value (§15).
+      letterSpacing: {
+        display: '-0.03em',
+        heading: '-0.022em',
+        body: '0em',
+        micro: '0.04em',
+      },
+      fontFamily: {
+        display: ['"Space Grotesk Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['"Inter Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono Variable"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       keyframes: {
-        gradient: {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
+        // Compositor-friendly drift: transform only, never background-position,
+        // which repaints the whole viewport every frame (§11).
+        drift: {
+          '0%': { transform: 'translate3d(-1.5%, -1%, 0)' },
+          '100%': { transform: 'translate3d(1.5%, 1%, 0)' },
         },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-20px)' },
-        }
       },
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-      }
+      animation: {
+        drift: 'drift 60s ease-in-out infinite alternate',
+      },
     },
   },
   plugins: [],
-}
+};
