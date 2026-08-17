@@ -15,4 +15,6 @@ export const profile = {
   availability: 'Open to senior and staff engineering roles',
   /** The header has one line to spend, so it gets the short form. */
   availabilityShort: 'Open to work',
+  /** Printed from this page itself — see `npm run cv`, so it cannot drift. */
+  cv: '/junaid-nazir-cv.pdf',
 };

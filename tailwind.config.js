@@ -13,6 +13,7 @@ export default {
         graphite: '#6B6B72', // secondary text and functional borders, 4.86:1
         rule: '#DDDDD8', // decorative hairlines only, never load-bearing
         accent: '#2B44C7', // 7.08:1 on paper, 7.6:1 as white-on-accent
+        signal: '#D93025', // recording dot only — never type, never a surface
       },
       fontFamily: {
         sans: ['"Geist Variable"', 'ui-sans-serif', 'system-ui', 'sans-serif'],

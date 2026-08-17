@@ -1,5 +1,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import SectionMark from './SectionMark';
+import { type IconName } from './Icon';
 import { enterUp, spring, viewportOnce } from '../../lib/motion';
 
 interface SectionProps {
@@ -9,6 +11,9 @@ interface SectionProps {
    * sections, and they must carry real information rather than decorate.
    */
   eyebrow?: string;
+  /** A mark for the section, tinted so a fast scroll has distinct landmarks. */
+  icon?: IconName;
+  tint?: string;
   title: string;
   intro?: string;
   children: ReactNode;
@@ -18,13 +23,15 @@ interface SectionProps {
 export default function Section({
   id,
   eyebrow,
+  icon,
+  tint = '#2B44C7',
   title,
   intro,
   children,
   className = '',
 }: SectionProps) {
   return (
-    <section id={id} className={`scroll-mt-24 py-24 md:py-32 ${className}`}>
+    <section id={id} className={`scroll-mt-20 py-12 md:py-16 ${className}`}>
       <div className="mx-auto max-w-shell px-6">
         <motion.div
           variants={enterUp}
@@ -32,11 +39,14 @@ export default function Section({
           whileInView="visible"
           viewport={viewportOnce}
           transition={spring}
-          className="mb-12 md:mb-16"
+          className="mb-8 md:mb-10"
         >
-          {eyebrow && <p className="label mb-4">{eyebrow}</p>}
-          <h2>{title}</h2>
-          {intro && <p className="lede mt-5">{intro}</p>}
+          {eyebrow && <p className="label mb-3">{eyebrow}</p>}
+          <div className="flex items-center gap-4">
+            {icon && <SectionMark icon={icon} tint={tint} />}
+            <h2>{title}</h2>
+          </div>
+          {intro && <p className="lede mt-4">{intro}</p>}
         </motion.div>
         {children}
       </div>

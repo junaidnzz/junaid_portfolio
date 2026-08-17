@@ -6,6 +6,7 @@ import Statement from './components/Statement';
 import Work from './components/Work';
 import Approach from './components/Approach';
 import Career from './components/Career';
+import ShipIt from './components/ShipIt';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 
@@ -25,6 +26,7 @@ export default function App() {
         <Statement />
         <Work />
         <Approach />
+        <ShipIt />
         <Career />
         <Contact />
       </main>

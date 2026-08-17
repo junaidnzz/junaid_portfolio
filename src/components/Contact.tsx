@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import Section from './ui/Section';
+import { tints } from './ui/SectionMark';
 import Icon from './ui/Icon';
+import RecordingDot from './ui/RecordingDot';
 import { profile } from '../data/profile';
 import { enterUp, spring, stagger, viewportOnce } from '../lib/motion';
 
@@ -14,7 +16,7 @@ const channels = [
 
 export default function Contact() {
   return (
-    <Section id="contact" title="Get in touch" className="pb-16 md:pb-24">
+    <Section id="contact" icon="contact" tint={tints.contact} title="Get in touch" className="pb-16 md:pb-24">
       <div className="grid gap-12 md:grid-cols-12">
         <motion.div
           variants={enterUp}
@@ -30,15 +32,27 @@ export default function Contact() {
           </p>
           <p className="mt-3 text-small text-graphite">{profile.location}</p>
 
-          {/* One CTA, one intent. A second button competing for the same action
-              splits attention without offering a real choice. */}
-          <a
-            href={`mailto:${profile.email}`}
-            className="press mt-8 inline-flex items-center gap-2 rounded bg-accent px-5 py-3 text-small font-medium text-white transition-colors hover:bg-ink"
-          >
-            Email me
-            <Icon name="arrow-up-right" className="h-4 w-4" />
-          </a>
+          {/* One primary CTA. The CV sits beside it as a secondary action
+              because a recruiter's first move is often to forward a file, not
+              to write. */}
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href={`mailto:${profile.email}`}
+              className="press inline-flex items-center gap-2 rounded bg-accent px-5 py-3 text-small font-medium text-white transition-colors hover:bg-ink"
+            >
+              Email me
+              <Icon name="arrow-up-right" className="h-4 w-4" />
+            </a>
+            <a
+              href={profile.cv}
+              download
+              className="press inline-flex items-center gap-2.5 rounded border border-ink/25 px-5 py-3 text-small font-medium transition-colors hover:border-ink"
+            >
+              <RecordingDot />
+              Download CV
+              <Icon name="download" className="h-4 w-4 text-graphite" />
+            </a>
+          </div>
         </motion.div>
 
         <div className="md:col-span-6 md:col-start-7">

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { profile } from '../data/profile';
 import { experiences } from '../data/experience';
 import Icon from './ui/Icon';
+import CompanyLogo from './ui/CompanyLogo';
 import SystemField from './hero/SystemField';
 import KineticHeadline from './hero/KineticHeadline';
 import { enterUp, spring } from '../lib/motion';
@@ -88,17 +89,23 @@ export default function Statement() {
             variants={enterUp}
             className="md:col-span-5 md:col-start-8 lg:col-span-4 lg:col-start-9"
           >
-            <div className="flex items-baseline justify-between gap-4 border-b border-ink/20 py-3">
-              <dt className="label text-ink">Now</dt>
-              <dd className="text-small font-medium">{current.company}</dd>
+            <div className="flex items-center justify-between gap-4 border-b border-ink/20 py-3">
+              <dt className="flex items-center gap-3 text-small font-medium">
+                <CompanyLogo id={current.id} className="h-6 w-6 rounded-sm object-contain" />
+                {current.company}
+              </dt>
+              <dd className="label text-ink">Now</dd>
             </div>
             {previous.map((role) => (
               <div
                 key={role.id}
-                className="flex items-baseline justify-between gap-4 border-b border-rule py-3"
+                className="flex items-center justify-between gap-4 border-b border-rule py-3"
               >
-                <dt className="label">{startYear(role.period)}</dt>
-                <dd className="text-small text-graphite">{role.company}</dd>
+                <dt className="flex items-center gap-3 text-small">
+                  <CompanyLogo id={role.id} className="h-6 w-6 rounded-sm object-contain" />
+                  {role.company}
+                </dt>
+                <dd className="label">{startYear(role.period)}</dd>
               </div>
             ))}
           </motion.dl>

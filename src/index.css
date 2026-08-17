@@ -101,6 +101,39 @@
     @apply border-rule;
   }
 
+  /* A recording light: the dot holds, dips and returns, and a ring pushes out
+     from under it. Both stop after one pass for anyone who asked for less
+     motion, courtesy of the reduced-motion block below. */
+  .rec-dot {
+    animation: rec-blink 1.7s ease-in-out infinite;
+  }
+
+  .rec-ring {
+    animation: rec-ring 1.7s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  @keyframes rec-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    55% {
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes rec-ring {
+    0% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    70%,
+    100% {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+
   /* Translucent chrome, used only by the header. */
   .chrome-blur {
     background-color: rgb(247 247 245 / 0.72);
@@ -170,6 +203,27 @@
 
   .no-print {
     display: none !important;
+  }
+
+  /* Entrance animations leave inline opacity and transforms on anything that
+     was never scrolled into view. Paper has no scrolling, so a print started
+     from the top would otherwise come out mostly blank. */
+  [style*='opacity'],
+  [style*='transform'] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  * {
+    animation: none !important;
+    filter: none !important;
+  }
+
+  /* The hero is sized to the viewport on screen; on paper that is a wasted
+     first page. */
+  #top {
+    min-height: 0 !important;
+    padding-block: 0 !important;
   }
 
   section {

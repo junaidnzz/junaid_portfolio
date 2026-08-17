@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import CompanyLogo from './ui/CompanyLogo';
+import SectionMark, { tints } from './ui/SectionMark';
 import Icon from './ui/Icon';
 import ProjectGlyph from './work/ProjectGlyph';
 import { projects } from '../data/projects';
+import { enterUp, spring, viewportOnce } from '../lib/motion';
 
 /**
  * Art-directed panels rather than a card grid. Each project owns a full band,
@@ -26,7 +29,12 @@ export default function Work() {
       ctx = gsap.context(() => {
         // Each glyph drifts against its panel as it passes. Parallax here is
         // doing a job: it separates the drawing layer from the type layer.
-        gsap.utils.toArray<HTMLElement>('[data-glyph]').forEach((glyph) => {
+        // Hidden on phones, so there is nothing to parallax there either.
+        const glyphs = gsap.utils
+          .toArray<HTMLElement>('[data-glyph]')
+          .filter((glyph) => glyph.offsetParent !== null);
+
+        glyphs.forEach((glyph) => {
           gsap.fromTo(
             glyph,
             { yPercent: -9 },
@@ -60,14 +68,24 @@ export default function Work() {
   const [lead, ...rest] = projects;
 
   return (
-    <section ref={root} id="work" className="scroll-mt-24 py-24 md:py-32">
+    <section ref={root} id="work" className="scroll-mt-20 py-12 md:py-16">
       <div className="mx-auto max-w-shell px-6">
-        <h2 className="mb-14 md:mb-20">Selected work</h2>
+        <motion.div
+          variants={enterUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={viewportOnce}
+          transition={spring}
+          className="mb-8 flex items-center gap-4 md:mb-10"
+        >
+          <SectionMark icon="work" tint={tints.work} />
+          <h2>Selected work</h2>
+        </motion.div>
       </div>
 
       {/* The lead panel is the section's loudest moment: full bleed, inverted. */}
       <article data-panel className="bg-accent text-white">
-        <div className="mx-auto max-w-shell px-6 py-16 md:py-24">
+        <div className="mx-auto max-w-shell px-6 py-12 md:py-20">
           <div className="grid items-center gap-12 md:grid-cols-12">
             <div className="md:col-span-7">
               <p data-panel-item className="font-mono text-micro uppercase tracking-micro text-white/70">
@@ -108,7 +126,10 @@ export default function Work() {
               )}
             </div>
 
-            <div data-glyph className="md:col-span-5">
+            {/* The system drawings are hidden on phones: at that width they
+                shrink to an unreadable tangle and push the copy down a screen
+                for no gain. */}
+            <div data-glyph className="hidden md:col-span-5 md:block">
               <ProjectGlyph id={lead.id} className="w-full text-white/70" />
             </div>
           </div>
@@ -120,13 +141,13 @@ export default function Work() {
           <article
             data-panel
             key={project.id}
-            className="grid items-center gap-8 border-b border-rule py-16 md:grid-cols-12 md:gap-12"
+            className="grid items-center gap-8 border-b border-rule py-12 md:grid-cols-12 md:gap-12"
           >
             {/* Alternating sides, but the glyph never sits on the same side
                 more than twice running. */}
             <div
               data-glyph
-              className={`md:col-span-4 ${i % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}
+              className={`hidden md:block md:col-span-4 ${i % 2 === 0 ? 'md:order-2' : 'md:order-1'}`}
             >
               <ProjectGlyph id={project.id} className="w-full max-w-[280px] text-graphite" />
             </div>

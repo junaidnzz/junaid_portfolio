@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Section from './ui/Section';
+import { tints } from './ui/SectionMark';
 import { claims, stack } from '../data/approach';
 import { enterUp, spring, stagger, viewportOnce } from '../lib/motion';
 
@@ -7,6 +8,8 @@ export default function Approach() {
   return (
     <Section
       id="approach"
+      icon="approach"
+      tint={tints.approach}
       title="How I work"
       intro="Three things I will claim in an interview, each with the work that backs it."
     >

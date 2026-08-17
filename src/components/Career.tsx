@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import Section from './ui/Section';
+import { tints } from './ui/SectionMark';
 import CaseStudy from './CaseStudy';
 import { experiences } from '../data/experience';
 import { enterUp, spring, stagger, viewportOnce } from '../lib/motion';
@@ -12,6 +13,8 @@ export default function Career() {
   return (
     <Section
       id="career"
+      icon="career"
+      tint={tints.career}
       title="Career"
       intro="Four companies across three countries. Two of the roles below overlap, which was deliberate: they ran concurrently."
     >

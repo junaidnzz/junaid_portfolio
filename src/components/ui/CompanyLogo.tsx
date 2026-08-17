@@ -16,11 +16,27 @@ const logos: Record<string, { src: string; onInk?: string; alt: string }> = {
     alt: 'Arena Club',
   },
   hatchpath: { src: '/logos/hatchpath.png', alt: 'HatchPath' },
+  // Employer ids from `experiences`. Arena Club appears in both sets.
+  'arena-club': {
+    src: '/logos/arena-club-ink.png',
+    onInk: '/logos/arena-club-paper.png',
+    alt: 'Arena Club',
+  },
+  arbisoft: { src: '/logos/arbisoft.png', alt: 'Arbisoft' },
+  mission: { src: '/logos/mission.png', alt: 'Mission' },
+  sl2: { src: '/logos/sl2.png', alt: 'SL2 Studio' },
   virtua: { src: '/logos/virtua.png', alt: 'Virtua' },
   kayak: { src: '/logos/kayak.svg', alt: 'KAYAK' },
 };
 
 interface CompanyLogoProps {
+  /**
+   * Every current use sets the mark beside the company's name, so the default
+   * is decorative: an alt that repeats the adjacent text is announced twice by
+   * a screen reader and copied twice into the clipboard. Pass false only where
+   * the mark stands alone.
+   */
+  decorative?: boolean;
   /** Project id from `projects`. Ids without an asset render nothing. */
   id: string;
   /** The surface the mark sits on, not the colour of the mark itself. */
@@ -29,7 +45,12 @@ interface CompanyLogoProps {
   className?: string;
 }
 
-export default function CompanyLogo({ id, tone = 'paper', className = '' }: CompanyLogoProps) {
+export default function CompanyLogo({
+  id,
+  tone = 'paper',
+  decorative = true,
+  className = '',
+}: CompanyLogoProps) {
   const logo = logos[id];
   if (!logo) return null;
 
@@ -38,7 +59,7 @@ export default function CompanyLogo({ id, tone = 'paper', className = '' }: Comp
   return (
     <img
       src={src}
-      alt={logo.alt}
+      alt={decorative ? '' : logo.alt}
       loading="lazy"
       decoding="async"
       className={`w-auto object-contain ${className}`}

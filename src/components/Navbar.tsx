@@ -3,6 +3,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-
 import { navLinks } from '../data/navigation';
 import { profile } from '../data/profile';
 import Icon from './ui/Icon';
+import RecordingDot from './ui/RecordingDot';
 import { spring, springSheet } from '../lib/motion';
 
 /** "Junaid Nazir" -> "JN". Derived so the mark can never disagree with the name. */
@@ -99,12 +100,16 @@ export default function Navbar() {
             <span className="label">{profile.availabilityShort}</span>
           </span>
 
+          {/* The CV, not "get in touch": Contact is already in the nav, and the
+              thing a recruiter reaches for first is a file they can forward. */}
           <a
-            href="#contact"
-            className="press hidden items-center gap-2 rounded border border-ink/25 px-3.5 py-2 text-small font-medium transition-colors hover:border-ink lg:inline-flex"
+            href={profile.cv}
+            download
+            className="press relative hidden items-center gap-2.5 rounded bg-accent px-4 py-2 text-small font-medium text-white transition-colors hover:bg-ink md:inline-flex"
           >
-            Get in touch
-            <Icon name="arrow-up-right" className="h-3.5 w-3.5" />
+            <RecordingDot />
+            Download CV
+            <Icon name="download" className="h-3.5 w-3.5" />
           </a>
 
           <button
@@ -153,6 +158,20 @@ export default function Navbar() {
                 </a>
               </li>
             ))}
+
+            {/* The button is hidden on this breakpoint, so the menu carries it. */}
+            <li className="mt-3 border-t border-rule pt-4">
+              <a
+                href={profile.cv}
+                download
+                onClick={() => setMenuOpen(false)}
+                className="press inline-flex items-center gap-2.5 rounded bg-accent px-4 py-2.5 text-small font-medium text-white"
+              >
+                <RecordingDot />
+                Download CV
+                <Icon name="download" className="h-3.5 w-3.5" />
+              </a>
+            </li>
           </motion.ul>
         )}
       </AnimatePresence>
