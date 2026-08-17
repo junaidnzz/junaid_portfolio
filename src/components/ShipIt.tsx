@@ -143,7 +143,7 @@ export default function ShipIt() {
       icon="game"
       tint={tints.game}
       title="Get a deploy to production"
-      intro="One button, no instructions needed. Tap to keep the deploy in the air and slip it through each stage of the pipeline. It is already flying itself below — take over whenever you like."
+      intro="A one-button game: keep the deploy in the air and slip it through every stage of the pipeline."
     >
       <motion.div
         variants={enterUp}
@@ -208,8 +208,9 @@ export default function ShipIt() {
         </div>
 
         <p className="mt-4 max-w-prose text-small text-graphite">
-          Eight gates, tightening as you go: lint, types, unit, build, end-to-end, review, canary,
-          production — the same run a change makes on its way to users.
+          It is already flying itself — tap the field to take over. Eight gates, tightening as you
+          go: lint, types, unit, build, end-to-end, review, canary, production, the same run a
+          change makes on its way to users.
         </p>
       </motion.div>
     </Section>

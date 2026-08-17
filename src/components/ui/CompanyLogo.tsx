@@ -17,11 +17,7 @@ const logos: Record<string, { src: string; onInk?: string; alt: string }> = {
   },
   hatchpath: { src: '/logos/hatchpath.png', alt: 'HatchPath' },
   // Employer ids from `experiences`. Arena Club appears in both sets.
-  'arena-club': {
-    src: '/logos/arena-club-ink.png',
-    onInk: '/logos/arena-club-paper.png',
-    alt: 'Arena Club',
-  },
+  'arena-club': { src: '/logos/arena-club.png', alt: 'Arena Club' },
   arbisoft: { src: '/logos/arbisoft.png', alt: 'Arbisoft' },
   mission: { src: '/logos/mission.png', alt: 'Mission' },
   sl2: { src: '/logos/sl2.png', alt: 'SL2 Studio' },
