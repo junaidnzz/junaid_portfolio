@@ -77,40 +77,6 @@ jobs:
           esac
           exit $fail
 
-      # TEMPORARY diagnostic. Lists what the FTP login actually sees, so we can
-      # tell which account and directory the uploads are landing in. Filenames
-      # are not secrets; the credentials stay masked. Delete this step once the
-      # deploy is landing in the right place.
-      - name: Diagnose FTP layout
-        if: github.event_name != 'pull_request'
-        continue-on-error: true
-        env:
-          SERVER: ${{ secrets.FTP_SERVER }}
-          USERNAME: ${{ secrets.FTP_USERNAME }}
-          PASSWORD: ${{ secrets.FTP_PASSWORD }}
-          REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR }}
-        run: |
-          echo "=============================================="
-          echo "absolute path of the login directory"
-          echo "=============================================="
-          # The 257 reply carries the real server-side path, which tells us
-          # whether this login is chrooted and where.
-          curl -sv --ssl-reqd --max-time 30 --user "$USERNAME:$PASSWORD" \
-            -Q "PWD" "ftp://$SERVER/" --list-only 2>&1 \
-            | grep -E "^< (2[0-9][0-9]|5[0-9][0-9])" | head -12
-
-          list() {
-            echo "=============================================="
-            echo "listing: $1"
-            echo "=============================================="
-            curl -sk --ssl-reqd --max-time 30 --user "$USERNAME:$PASSWORD" \
-              "ftp://$SERVER$1" --list-only || echo "(could not list $1)"
-          }
-          list "/"
-          list "/../"
-          list "/../../"
-          list "/domains/"
-
       - name: Upload to Hostinger
         if: github.event_name != 'pull_request'
         uses: SamKirkland/FTP-Deploy-Action@v4.4.0

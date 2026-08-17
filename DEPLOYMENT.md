@@ -26,10 +26,20 @@ down four things:
 | **FTP host** | shown as `ftp.yourdomain.com` or an IP |
 | **FTP username** | usually `u123456789.yourdomain.com` |
 | **FTP password** | set it here; it is not shown again |
-| **Directory** | `/public_html/` for the primary domain, `/domains/yourdomain.com/public_html/` for an addon domain |
+| **Directory** | `/domains/junaidnazir.dev/public_html/` — see below |
 
-The directory is listed on the same page as the account's home path. Whatever
-you use, keep the **trailing slash**.
+Keep the **trailing slash**.
+
+The directory is the one trap here. `junaidnazir.dev` is an *addon* domain on
+this plan, so its document root is `/domains/junaidnazir.dev/public_html/`. The
+FTP login lands in `/public_html/`, which is the plan's *primary* site root and
+is served to nobody — deploying there succeeds, reports every file uploaded, and
+changes nothing on the site. Both directories have a `DO_NOT_UPLOAD_HERE` marker
+nearby for exactly this reason.
+
+To confirm the path for any domain, connect with an FTP client and look for
+`domains/<domain>/public_html`. If it exists, that is the document root; only a
+plan's primary domain is served from `/public_html/`.
 
 ### 2. Add them as GitHub secrets
 
@@ -41,7 +51,7 @@ repository secret**. Four secrets, named exactly:
 | `FTP_SERVER` | `ftp.junaidnazir.com` |
 | `FTP_USERNAME` | `u123456789.junaidnazir.com` |
 | `FTP_PASSWORD` | the password from step 1 |
-| `FTP_REMOTE_DIR` | `/public_html/` |
+| `FTP_REMOTE_DIR` | `/domains/junaidnazir.dev/public_html/` |
 
 ### 3. Commit the untracking of generated files
 
