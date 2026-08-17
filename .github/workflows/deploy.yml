@@ -90,6 +90,15 @@ jobs:
           PASSWORD: ${{ secrets.FTP_PASSWORD }}
           REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR }}
         run: |
+          echo "=============================================="
+          echo "absolute path of the login directory"
+          echo "=============================================="
+          # The 257 reply carries the real server-side path, which tells us
+          # whether this login is chrooted and where.
+          curl -sv --ssl-reqd --max-time 30 --user "$USERNAME:$PASSWORD" \
+            -Q "PWD" "ftp://$SERVER/" --list-only 2>&1 \
+            | grep -E "^< (2[0-9][0-9]|5[0-9][0-9])" | head -12
+
           list() {
             echo "=============================================="
             echo "listing: $1"
@@ -98,8 +107,9 @@ jobs:
               "ftp://$SERVER$1" --list-only || echo "(could not list $1)"
           }
           list "/"
-          list "$REMOTE_DIR"
-          list "/public_html/"
+          list "/../"
+          list "/../../"
+          list "/domains/"
 
       - name: Upload to Hostinger
         if: github.event_name != 'pull_request'
