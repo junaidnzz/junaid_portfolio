@@ -1,26 +1,53 @@
-# Hostinger (Apache/LiteSpeed) config for the Vite build
+# Apache config for the built site on Hostinger. Vite copies this file from
+# public/ into dist/, so it ships with every deploy.
 
-# Compression
+# Compression. The HTML, CSS and JS are the only text of any size; fonts and
+# images are already compressed and are left alone.
 <IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml
-</IfModule>
-
-# Cache hashed assets aggressively, HTML not at all
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType text/html "access plus 0 seconds"
-  ExpiresByType text/css "access plus 1 year"
-  ExpiresByType application/javascript "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
-  ExpiresByType image/png "access plus 1 month"
-  ExpiresByType image/svg+xml "access plus 1 month"
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|woff2)$">
-    Header set Cache-Control "public, max-age=31536000, immutable"
-  </FilesMatch>
+  # Everything under /assets/ carries a content hash in its filename, so a
+  # changed file is a changed URL and the old one can be cached forever.
+  SetEnvIf Request_URI "^/assets/" IMMUTABLE_ASSET=1
+  Header set Cache-Control "public, max-age=31536000, immutable" env=IMMUTABLE_ASSET
+
+  # index.html is the one file whose URL never changes. Caching it is how a
+  # deploy goes live for everyone except the people who already visited.
   <FilesMatch "\.html$">
-    Header set Cache-Control "no-cache"
+    Header set Cache-Control "no-cache, must-revalidate"
   </FilesMatch>
+
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
 </IfModule>
+
+# Unhashed files at the root (favicons, logos, og.png) revalidate hourly:
+# long enough to be cheap, short enough that replacing one takes effect.
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 hour"
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType image/svg+xml .svg
+  AddType font/woff2 .woff2
+  AddType application/manifest+json .webmanifest
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Single page app: anything that is not a real file or directory is served
+  # by index.html rather than a 404.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# HTTPS is forced from hPanel (Websites -> Security -> Force HTTPS) rather than
+# here. A redirect written by hand behind Hostinger's proxy is the usual cause
+# of a redirect loop.
