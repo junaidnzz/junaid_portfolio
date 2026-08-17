@@ -1,4 +1,4 @@
-# Junaid Nazir — Portfolio
+## Junaid Nazir — Portfolio
 
 Personal portfolio: dark futuristic single-page site built with React 19, Vite, TypeScript 5, Tailwind CSS 3, and Framer Motion.
 
