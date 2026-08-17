@@ -46,9 +46,40 @@ jobs:
       # pipeline before anything reaches the server.
       - run: npm run build
 
+      # An unset or misnamed secret evaluates to an empty string, and the
+      # deploy action treats an empty server-dir as "wherever the login
+      # lands" — a green run that uploads to the wrong directory. Fail here
+      # instead. Lengths are safe to print; the values themselves are masked.
+      - name: Verify deploy secrets
+        if: github.event_name != 'pull_request'
+        env:
+          SERVER: ${{ secrets.FTP_SERVER }}
+          USERNAME: ${{ secrets.FTP_USERNAME }}
+          PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR }}
+        run: |
+          fail=0
+          check() {
+            if [ -z "$2" ]; then
+              echo "::error::$1 is empty — check it is under Settings > Secrets and variables > Actions > Secrets (not Variables), spelled exactly $1"
+              fail=1
+            else
+              echo "$1 is set (${#2} characters)"
+            fi
+          }
+          check FTP_SERVER "$SERVER"
+          check FTP_USERNAME "$USERNAME"
+          check FTP_PASSWORD "$PASSWORD"
+          check FTP_REMOTE_DIR "$REMOTE_DIR"
+          case "$REMOTE_DIR" in
+            /*/) ;;
+            *) echo "::error::FTP_REMOTE_DIR must start and end with a slash, e.g. /public_html/"; fail=1 ;;
+          esac
+          exit $fail
+
       - name: Upload to Hostinger
         if: github.event_name != 'pull_request'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -68,3 +99,25 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/**
+
+      # A successful upload is not a successful deploy: the files can land in a
+      # directory the web server does not serve. Ask the live site whether it
+      # is actually serving the bundle this run just built.
+      - name: Verify the site is serving this build
+        if: github.event_name != 'pull_request'
+        run: |
+          asset=$(grep -oE 'assets/index-[A-Za-z0-9_-]+\.js' dist/index.html | head -1)
+          echo "Looking for $asset on $SITE"
+          # Retry: LiteSpeed can serve a stale copy for a few seconds.
+          for attempt in 1 2 3 4 5; do
+            if curl -fsS --max-time 20 "$SITE/?ci=$GITHUB_RUN_ID" | grep -q "$asset"; then
+              echo "Live site is serving this build."
+              exit 0
+            fi
+            echo "Not live yet (attempt $attempt), waiting..."
+            sleep 10
+          done
+          echo "::error::Upload succeeded but $SITE is not serving $asset. The files most likely went to a directory that is not the document root — check FTP_REMOTE_DIR."
+          exit 1
+        env:
+          SITE: https://junaidnazir.dev
