@@ -15,19 +15,6 @@ export const projects: Project[] = [
     year: '2024–2025',
   },
   {
-    id: 'eduai',
-    title: 'EduAI',
-    subtitle: 'Adaptive Learning System',
-    description:
-      'Intelligent education platform using machine learning to personalize curriculum and track student progress in real time.',
-    technologies: ['React', 'Python', 'TensorFlow', 'GraphQL', 'MongoDB'],
-    category: 'EdTech · AI',
-    gradient: 'from-violet-500/20 to-cyan-500/20',
-    ai: true,
-    link: null,
-    year: '2023',
-  },
-  {
     id: 'hatchpath',
     title: 'HatchPath',
     subtitle: 'Health Coaching Platform',
