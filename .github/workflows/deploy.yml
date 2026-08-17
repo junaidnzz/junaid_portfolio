@@ -1,0 +1,70 @@
+# Build on every pull request, deploy to Hostinger on every push to master.
+#
+# The build output is never committed: CI produces `dist/` from source, and
+# what lands on the server is exactly what this workflow built.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   FTP_SERVER      host from hPanel -> Files -> FTP Accounts (e.g. ftp.example.com)
+#   FTP_USERNAME    the FTP account username (usually u123456789.example.com)
+#   FTP_PASSWORD    that account's password
+#   FTP_REMOTE_DIR  target directory, with a trailing slash (e.g. /public_html/)
+#
+# See DEPLOYMENT.md for where each of those comes from.
+
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+# One deploy at a time. A second push mid-upload would interleave two sets of
+# files on the server, which is how a half-deployed site happens.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `npm ci` installs exactly what package-lock.json pins, and fails rather
+      # than silently resolving something newer than what was tested locally.
+      - run: npm ci
+
+      # `npm run build` runs `tsc --noEmit` first, so a type error fails the
+      # pipeline before anything reaches the server.
+      - run: npm run build
+
+      - name: Upload to Hostinger
+        if: github.event_name != 'pull_request'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./dist/
+          server-dir: ${{ secrets.FTP_REMOTE_DIR }}
+          # The action keeps a manifest on the server and uploads only what
+          # changed, so a routine content edit is a handful of files rather
+          # than the whole build.
+          state-name: .ftp-deploy-sync-state.json
+          # Never wipe the remote directory: mail folders, .well-known and any
+          # hand-uploaded file live alongside the build.
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**

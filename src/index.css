@@ -4,50 +4,54 @@
 
 @layer base {
   html {
+    /* Theme lock: this page commits to light. Telling the UA means form
+       controls, scrollbars and the caret match instead of guessing. */
+    color-scheme: light;
     scroll-behavior: smooth;
-    /* Layout scales with the user's text size (§15 Dynamic Type) — spacing
-       throughout is rem/em, so a larger root font grows the page with it. */
-    font-size: 100%;
+    font-size: 100%; /* layout scales with the reader's text size */
   }
 
   body {
-    @apply bg-base text-ink font-sans antialiased;
+    @apply bg-paper text-ink font-sans text-body antialiased;
     text-rendering: optimizeLegibility;
-  }
-
-  /* Tracking is size-specific — large type reads too loose, small type too
-     tight (§15). Never one letter-spacing for everything. */
-  h1,
-  .type-display {
-    letter-spacing: -0.03em;
-    line-height: 1.02;
     font-optical-sizing: auto;
   }
 
+  /* Tracking and leading are size-specific. Large type reads too loose and
+     small type too tight, so neither inherits one global value. */
+  h1 {
+    @apply text-display tracking-display font-semibold;
+  }
+
   h2 {
-    letter-spacing: -0.022em;
-    line-height: 1.1;
+    @apply text-h2 tracking-heading font-semibold;
   }
 
   h3 {
-    letter-spacing: -0.014em;
-    line-height: 1.25;
+    @apply text-h3 tracking-heading font-medium;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
   }
 
   p {
+    text-wrap: pretty;
     letter-spacing: 0;
   }
 
   ::selection {
-    @apply bg-accent/30 text-white;
+    @apply bg-accent/15 text-ink;
   }
 
-  /* Craft: every interactive element gets the same deliberate focus ring
-     instead of the browser default, which is invisible on a dark surface. */
+  /* One deliberate focus ring everywhere. The browser default is unusable on
+     paper, and removing it without a replacement is worse than either. */
   :focus-visible {
     outline: 2px solid theme('colors.accent');
     outline-offset: 3px;
-    border-radius: 6px;
+    border-radius: 2px;
   }
 
   :focus:not(:focus-visible) {
@@ -56,43 +60,10 @@
 }
 
 @layer utilities {
-  .glass-card {
-    @apply bg-white/[0.04] border border-white/10 rounded-2xl transition-colors duration-300;
-    backdrop-filter: blur(16px) saturate(160%);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-  }
-
-  /* Bigger surfaces read as thicker material: stronger blur, deeper shadow,
-     and a bright top edge where light catches the glass (§12). */
-  .glass-strong {
-    @apply bg-white/[0.05] border border-white/10 rounded-2xl;
-    backdrop-filter: blur(28px) saturate(180%);
-    -webkit-backdrop-filter: blur(28px) saturate(180%);
-    box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.8);
-    border-top-color: rgba(255, 255, 255, 0.16);
-  }
-
-  .glass-card-hover {
-    @apply hover:border-accent/40 hover:shadow-[0_0_24px_-6px_rgba(34,211,238,0.35)];
-    transition:
-      border-color 300ms ease-out,
-      box-shadow 300ms ease-out,
-      transform 200ms cubic-bezier(0.2, 0, 0, 1);
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-cyan-400 to-violet-500 bg-clip-text text-transparent;
-  }
-
-  .glow-ring {
-    @apply border border-accent/60 shadow-[0_0_20px_-4px_rgba(34,211,238,0.5)];
-  }
-
-  /* §1 Response: feedback belongs on the press, not the release, and it is
-     instant. `:active` fires on pointer-down in every browser. */
+  /* Feedback belongs on the press, not the release, and it is instant.
+     `:active` fires on pointer-down in every browser. */
   .press {
     transition: transform 100ms cubic-bezier(0.2, 0, 0, 1);
-    will-change: transform;
   }
 
   .press:active {
@@ -107,29 +78,40 @@
     transform: scale(0.99);
   }
 
-  /* §12 Scroll edge effect: a soft gradient where content meets floating
-     chrome, instead of a hard 1px divider. */
-  .scroll-edge::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    top: 100%;
-    height: 1.5rem;
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(5, 7, 15, 0.55), transparent);
-    -webkit-mask-image: linear-gradient(to bottom, black, transparent);
-    mask-image: linear-gradient(to bottom, black, transparent);
+  /* Small mono text takes positive tracking to stay legible. */
+  .label {
+    @apply font-mono text-micro tracking-micro uppercase text-graphite;
   }
 
-  /* Small mono/caption text takes slightly positive tracking for legibility. */
-  .tracking-micro {
-    letter-spacing: 0.04em;
+  .lede {
+    @apply text-lede text-graphite max-w-prose;
+  }
+
+  /* Links inside running prose. The offset keeps descenders clear of the rule. */
+  .prose-link {
+    @apply text-accent underline decoration-accent/30 underline-offset-4;
+    transition: text-decoration-color 150ms ease-out;
+  }
+
+  .prose-link:hover {
+    @apply decoration-accent;
+  }
+
+  .hairline {
+    @apply border-rule;
+  }
+
+  /* Translucent chrome, used only by the header. */
+  .chrome-blur {
+    background-color: rgb(247 247 245 / 0.72);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
   }
 }
 
-/* §14 Reduced motion is not "no feedback" — it is a gentler, non-vestibular
-   equivalent. Kill transforms, springs and parallax; keep the opacity and
-   colour changes that carry meaning. */
+/* Reduced motion is not "no feedback", it is a gentler equivalent. Strip
+   transforms, springs and scroll choreography; keep the opacity and colour
+   changes that carry meaning. */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -145,32 +127,81 @@
   }
 }
 
-/* §14 Translucency is a preference, not a given. */
+/* Translucency is a preference, not a given. */
 @media (prefers-reduced-transparency: reduce) {
-  .glass-card,
-  .glass-strong {
-    background-color: #0b0f1c;
+  .chrome-blur {
+    background-color: theme('colors.paper');
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-  }
-
-  .scroll-edge::after {
-    display: none;
   }
 }
 
 @media (prefers-contrast: more) {
-  .glass-card,
-  .glass-strong {
-    background-color: #05070f;
-    border-color: rgba(255, 255, 255, 0.45);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+  body {
+    @apply bg-white text-black;
   }
 
-  .text-gradient {
-    background: none;
-    -webkit-text-fill-color: currentColor;
-    @apply text-white;
+  .hairline {
+    border-color: theme('colors.graphite');
+  }
+
+  .label,
+  .lede {
+    @apply text-ink;
+  }
+}
+
+/* The page prints as a clean one-column CV. Recruiters still print, and the
+   architecture drawing survives the trip because it is real SVG. */
+@media print {
+  @page {
+    margin: 18mm;
+  }
+
+  html {
+    font-size: 11pt;
+    scroll-behavior: auto;
+  }
+
+  body {
+    background: #fff;
+    color: #000;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  section {
+    break-inside: avoid-page;
+    padding-block: 0.75rem !important;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid-page;
+  }
+
+  /* Collapsed disclosures hide their content on screen. In print everything
+     is shown, because paper has no affordance to expand. */
+  [data-print-expand] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+    opacity: 1 !important;
+  }
+
+  a[href^='http']::after,
+  a[href^='mailto']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.85em;
+    color: #444;
+    word-break: break-all;
+  }
+
+  a {
+    color: #000;
+    text-decoration: none;
   }
 }

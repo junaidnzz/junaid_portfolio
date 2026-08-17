@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <defs>
-    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="32" height="32" rx="6" fill="url(#gradient)"/>
-  <text x="50%" y="50%" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle" dominant-baseline="middle">JN</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Junaid Nazir">
+  <!-- The same mark as the site header: ink tile, paper monogram. Letterforms
+       are drawn as strokes rather than <text> so the icon never depends on a
+       font being available to whatever is rasterising it. -->
+  <rect width="32" height="32" rx="7" fill="#16161A"/>
+  <g fill="none" stroke="#F7F7F5" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M14 9.5v8a3.5 3.5 0 0 1-7 0"/>
+    <path d="M18.8 22.5V9.5l6.7 13V9.5"/>
+  </g>
 </svg>

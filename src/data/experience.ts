@@ -1,23 +1,25 @@
 import type { ExperienceRole } from './types';
 
-// TODO(Junaid): the Arena Club AI bullets are credible drafts — replace with the
-// real feature specifics you shipped.
 export const experiences: ExperienceRole[] = [
   {
     id: 'arena-club',
     title: 'Senior Software Engineer',
     company: 'Arena Club',
     period: '04/2024 – Present',
-    location: 'Los Angeles, United States',
+    location: 'London, United Kingdom',
     remote: true,
     description:
-      'Building AI-driven product features and leading frontend development for a next-generation sports collectibles marketplace.',
+      'Architecture and performance ownership for a sports collectibles marketplace, plus AI-driven product features.',
     bullets: [
-      { text: 'Shipped AI-powered product features in production, integrating LLM APIs into core marketplace flows', ai: true },
-      { text: 'Adopted an AI-augmented engineering workflow (Claude Code, agentic refactors, AI-assisted code review) across daily development', ai: true },
-      { text: 'Designed interactive UI components with React & Next.js and cut page load times by 40%' },
-      { text: 'Integrated secure payment solutions with Stripe' },
+      {
+        text: 'Led the migration off the legacy front end onto a modern React and Next.js architecture, incrementally, with the app still serving customers throughout',
+      },
+      {
+        text: 'Cut time to buy an item from 35 seconds to 15 through code splitting, API consolidation, API caching and image optimisation',
+      },
+      { text: 'Shipped AI-powered features in production, integrating LLM APIs into core marketplace flows', ai: true },
       { text: 'Refactored legacy code to modern React patterns with 90% test coverage' },
+      { text: 'Integrated secure payment flows with Stripe' },
     ],
     tech: ['React', 'Next.js', 'TypeScript', 'LLM APIs', 'Stripe', 'Jest'],
   },
